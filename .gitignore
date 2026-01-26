@@ -15,5 +15,5 @@ wheels/
 progress/
 
 # Model training data
-data/
+/data/
 processed_data/
