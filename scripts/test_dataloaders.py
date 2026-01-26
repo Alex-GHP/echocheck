@@ -1,10 +1,18 @@
 import sys
 import json
 from pathlib import Path
-from src.data.create_dataloaders import create_dataloaders
+import importlib.util
 
 project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+spec = importlib.util.spec_from_file_location(
+    "create_dataloaders_module", project_root / "src" / "data" / "create_dataloaders.py"
+)
+create_dataloaders_module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(create_dataloaders_module)
+create_dataloaders = create_dataloaders_module.create_dataloaders
 
 
 def create_minimal_test_data(output_dir):
