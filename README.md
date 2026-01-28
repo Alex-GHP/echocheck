@@ -1,4 +1,4 @@
-# EchoChecker: Political Stance and Ideology Classification using Advanced NLP Techniques
+# EchoCheck: Political Stance and Ideology Classification using Advanced NLP Techniques
 
 [![Python 3.14+](https://img.shields.io/badge/python-3.14+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.10+-ee4c2c.svg)](https://pytorch.org/)
