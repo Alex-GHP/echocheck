@@ -36,14 +36,14 @@ def create_dataloaders(
 
     if use_jsonl is None:
         use_jsonl = (data_dir / "train.jsonl").exists()
-    
+
     if use_jsonl:
         ext = ".jsonl"
         DatasetClass = PoliticalDatasetJSONL
     else:
         ext = ".json"
         DatasetClass = PoliticalDataset
-    
+
     train_file = data_dir / f"train{ext}"
     val_file = data_dir / f"val{ext}"
     test_file = data_dir / f"test{ext}"
@@ -57,12 +57,18 @@ def create_dataloaders(
 
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
 
-    train_dataset = DatasetClass(str(train_file), tokenizer=tokenizer, max_length=max_length)
-    val_dataset = DatasetClass(str(val_file), tokenizer=tokenizer, max_length=max_length)
-    test_dataset = DatasetClass(str(test_file), tokenizer=tokenizer, max_length=max_length)
+    train_dataset = DatasetClass(
+        str(train_file), tokenizer=tokenizer, max_length=max_length
+    )
+    val_dataset = DatasetClass(
+        str(val_file), tokenizer=tokenizer, max_length=max_length
+    )
+    test_dataset = DatasetClass(
+        str(test_file), tokenizer=tokenizer, max_length=max_length
+    )
 
     if use_jsonl and num_workers > 0:
-        print(f"Warning: Using num_workers=0 for JSONL datasets (file handle safety)")
+        print("Warning: Using num_workers=0 for JSONL datasets (file handle safety)")
         num_workers = 0
 
     train_loader = DataLoader(
