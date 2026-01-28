@@ -17,3 +17,6 @@ progress/
 # Model training data
 /data/
 processed_data/
+processed_data_sample/
+processed_data_jsonl/
+models/
