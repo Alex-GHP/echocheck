@@ -13,6 +13,7 @@ wheels/
 # IDE
 .vscode
 .idea
+docs/
 
 # Environment variables / secrets
 .env
@@ -21,13 +22,13 @@ wheels/
 # Data files (large - provide source in README)
 /data/
 processed_data/
-processed_data_sample/
 processed_data_jsonl/
-test_data_minimal/
-progress/
 
 # Trained models (large - upload to HuggingFace instead)
 models/
 
 # Logs
 *.log
+
+# Weights & Biases local run cache (data lives in the cloud)
+wandb/

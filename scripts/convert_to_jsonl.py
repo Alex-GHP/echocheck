@@ -1,15 +1,15 @@
+from __future__ import annotations
+
+import contextlib
 import json
 from pathlib import Path
 
+from echocheck.config import PROJECT_ROOT, settings
 
-def stream_json_array(file_path):
-    """
-    Generator that yields individual objects from a JSON array file
-    without loading the entire file into memory.
 
-    Works by tracking brace/bracket depth and string state.
-    """
-    with open(file_path, "r", encoding="utf-8", buffering=8 * 1024 * 1024) as f:
+def stream_json_array(file_path, buffer_bytes: int):
+    """Generator that yields objects from a JSON array file without loading it all."""
+    with Path(file_path).open(encoding="utf-8", buffering=buffer_bytes) as f:
         char = f.read(1)
         while char and char != "[":
             char = f.read(1)
@@ -57,10 +57,8 @@ def stream_json_array(file_path):
                 if depth == 0 and char == "}":
                     buffer.append(char)
                     obj_str = "".join(buffer)
-                    try:
+                    with contextlib.suppress(json.JSONDecodeError):
                         yield json.loads(obj_str)
-                    except json.JSONDecodeError:
-                        pass
                     buffer = []
                 elif depth >= 0:
                     buffer.append(char)
@@ -70,17 +68,14 @@ def stream_json_array(file_path):
                 buffer.append(char)
 
 
-def convert_json_to_jsonl(input_path, output_path):
-    """
-    Convert a JSON array file to JSONL format using streaming.
-    Memory usage stays constant regardless of file size.
-    """
+def convert_json_to_jsonl(input_path, output_path, buffer_bytes: int):
+    """Streaming JSON-array → JSONL conversion; memory stays constant."""
     input_path = Path(input_path)
     output_path = Path(output_path)
 
     count = 0
-    with open(output_path, "w", encoding="utf-8", buffering=8 * 1024 * 1024) as outfile:
-        for obj in stream_json_array(input_path):
+    with output_path.open("w", encoding="utf-8", buffering=buffer_bytes) as outfile:
+        for obj in stream_json_array(input_path, buffer_bytes=buffer_bytes):
             outfile.write(json.dumps(obj, ensure_ascii=False) + "\n")
             count += 1
 
@@ -88,9 +83,8 @@ def convert_json_to_jsonl(input_path, output_path):
 
 
 def main():
-    project_root = Path(__file__).parent.parent
-    input_dir = project_root / "processed_data"
-    output_dir = project_root / "processed_data_jsonl"
+    input_dir = PROJECT_ROOT / settings.processed_data_dir
+    output_dir = PROJECT_ROOT / settings.processed_data_jsonl_dir
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -114,7 +108,10 @@ def main():
         if output_file.exists():
             continue
 
-        convert_json_to_jsonl(input_file, output_file)
+        count = convert_json_to_jsonl(
+            input_file, output_file, buffer_bytes=settings.jsonl_buffer_bytes
+        )
+        print(f"  {json_name} → {jsonl_name}: {count:,} records")
 
     print("\n" + "=" * 60)
     print("Conversion Complete.")

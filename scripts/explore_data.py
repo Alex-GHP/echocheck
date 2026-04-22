@@ -1,8 +1,3 @@
-"""
-Data Exploration Script for EchoChecker
-This script helps understand the dataset structure and statistics.
-"""
-
 import json
 import sys
 from collections import Counter
@@ -12,7 +7,7 @@ from pathlib import Path
 def load_json_file(filepath):
     """Load a JSON file and return the data."""
     try:
-        with open(filepath, "r", encoding="utf-8") as f:
+        with Path(filepath).open(encoding="utf-8") as f:
             data = json.load(f)
         return data
     except FileNotFoundError:
@@ -140,11 +135,9 @@ def check_data_quality(articles):
             issues["missing_title"] += 1
         if not article.get("text"):
             issues["missing_text"] += 1
-        elif (
-            isinstance(article.get("text"), list) and len(article.get("text", [])) == 0
+        elif (isinstance(article.get("text"), list) and len(article.get("text", [])) == 0) or (
+            isinstance(article.get("text"), str) and len(article.get("text", "")) == 0
         ):
-            issues["empty_text"] += 1
-        elif isinstance(article.get("text"), str) and len(article.get("text", "")) == 0:
             issues["empty_text"] += 1
         if not article.get("date"):
             issues["missing_date"] += 1
@@ -214,9 +207,7 @@ def main():
     total_articles = sum(len(articles) for articles in datasets.values())
     print(f"\nTotal articles across all labels: {total_articles:,}")
     for label, articles in datasets.items():
-        print(
-            f"{label}: {len(articles):,} articles ({len(articles) / total_articles * 100:.1f}%)"
-        )
+        print(f"{label}: {len(articles):,} articles ({len(articles) / total_articles * 100:.1f}%)")
 
     print("\nExploration complete!")
     print("\nNext steps:")

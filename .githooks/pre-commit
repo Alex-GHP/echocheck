@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+echo "pre-commit: uv sync --frozen..."
+if ! uv sync --frozen --quiet; then
+    echo
+    echo "uv sync failed. If you edited pyproject.toml, run:"
+    echo "    uv lock"
+    echo "to refresh uv.lock, then stage it and commit again."
+    exit 1
+fi
+
+mapfile -t staged_py < <(git diff --cached --name-only --diff-filter=ACM -- '*.py')
+
+if [ "${#staged_py[@]}" -eq 0 ]; then
+    echo "pre-commit: OK (no Python files staged)."
+    exit 0
+fi
+
+echo "pre-commit: ruff format --check on ${#staged_py[@]} file(s)..."
+if ! uv run --quiet ruff format --check "${staged_py[@]}"; then
+    echo
+    echo "Formatting issues detected. Fix with:"
+    echo "    uv run ruff format ."
+    echo "Then re-stage the files and commit again."
+    exit 1
+fi
+
+echo "pre-commit: ruff check on ${#staged_py[@]} file(s)..."
+if ! uv run --quiet ruff check "${staged_py[@]}"; then
+    echo
+    echo "Lint errors detected. Many are auto-fixable:"
+    echo "    uv run ruff check --fix ."
+    exit 1
+fi
+
+echo "pre-commit: OK."
