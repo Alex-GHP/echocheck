@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+echo "pre-push: uv sync --frozen..."
+uv sync --frozen --quiet
+
+echo "pre-push: ruff format --check on full repo..."
+uv run --quiet ruff format --check .
+
+echo "pre-push: ruff check on full repo..."
+uv run --quiet ruff check .
+
+echo "pre-push: OK."

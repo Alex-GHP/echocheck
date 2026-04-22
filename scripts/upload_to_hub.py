@@ -1,80 +1,73 @@
+from __future__ import annotations
+
 import argparse
 from pathlib import Path
-import torch
-from transformers import RobertaForSequenceClassification, AutoTokenizer
+
+from echocheck.config import settings
+from transformers import AutoTokenizer, RobertaForSequenceClassification
 
 
 def upload_model(
-    checkpoint_path: str,
-    repo_name: str,
+    model_dir: str,
+    repo_id: str,
     private: bool = False,
+    commit_message: str = "Update model",
+    token: str | None = None,
 ):
-    """
-    Upload trained model to HuggingFace Hub.
-
-    Parameters:
-    - checkpoint_path: Path to best_model.pt
-    - repo_name: Name for the HuggingFace repo (e.g., "echochecker-political-stance")
-    - private: Whether to make the repo private (default: False/public)
-    """
-
+    """Upload a Trainer-saved model directory to the Hub."""
     print("=" * 60)
     print("UPLOADING MODEL TO HUGGINGFACE HUB")
     print("=" * 60)
+    print(f"Source: {model_dir}")
+    print(f"Target: {repo_id} (private={private})")
 
-    model = RobertaForSequenceClassification.from_pretrained(
-        "roberta-base", num_labels=3, problem_type="single_label_classification"
-    )
+    model = RobertaForSequenceClassification.from_pretrained(model_dir)
+    tokenizer = AutoTokenizer.from_pretrained(model_dir)
 
-    checkpoint = torch.load(checkpoint_path, map_location="cpu")
-    model.load_state_dict(checkpoint["model_state_dict"])
-    tokenizer = AutoTokenizer.from_pretrained("roberta-base")
-
-    model.config.id2label = {0: "center", 1: "left", 2: "right"}
-    model.config.label2id = {"center": 0, "left": 1, "right": 2}
-
-    model.push_to_hub(
-        repo_name,
-        private=private,
-        commit_message="Upload trained EchoChecker political stance classifier",
-    )
-
-    tokenizer.push_to_hub(repo_name, private=private, commit_message="Upload tokenizer")
+    model.push_to_hub(repo_id, private=private, commit_message=commit_message, token=token)
+    tokenizer.push_to_hub(repo_id, private=private, commit_message=commit_message, token=token)
 
     print("\n" + "=" * 60)
     print("UPLOAD COMPLETE")
     print("=" * 60)
-    print(f"https://huggingface.co/alxdev/{repo_name}")
+    print(f"https://huggingface.co/{repo_id}")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Upload model to HuggingFace Hub")
+    parser = argparse.ArgumentParser(description="Upload a model directory to the HuggingFace Hub")
     parser.add_argument(
-        "--checkpoint",
+        "--model-dir",
         type=str,
-        default="models/best_model/best_model.pt",
-        help="Path to model checkpoint",
+        default=str(settings.final_model_dir),
+        help="Directory saved by the Trainer (defaults to settings.final_model_dir)",
     )
     parser.add_argument(
-        "--repo-name",
+        "--repo-id",
         type=str,
-        default="echochecker-political-stance",
-        help="Name for the HuggingFace repository",
+        default=settings.hf_hub_repo_id,
+        help="Destination repo ID on the Hub (defaults to settings.hf_hub_repo_id)",
     )
+    parser.add_argument("--private", action="store_true", help="Make the repository private")
     parser.add_argument(
-        "--private", action="store_true", help="Make the repository private"
+        "--message",
+        type=str,
+        default="Update model",
+        help="Commit message for both model and tokenizer pushes",
     )
 
     args = parser.parse_args()
 
-    if not Path(args.checkpoint).exists():
-        print(f"Error: Checkpoint not found: {args.checkpoint}")
+    if not Path(args.model_dir).exists():
+        print(f"Error: model directory not found: {args.model_dir}")
         return 1
 
     upload_model(
-        checkpoint_path=args.checkpoint, repo_name=args.repo_name, private=args.private
+        model_dir=args.model_dir,
+        repo_id=args.repo_id,
+        private=args.private,
+        commit_message=args.message,
+        token=settings.hf_token,
     )
-
     return 0
 
 
