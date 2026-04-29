@@ -23,6 +23,7 @@ docs/
 /data/
 processed_data/
 processed_data_jsonl/
+processed_data_subsample_jsonl/
 
 # Trained models (large - upload to HuggingFace instead)
 models/
