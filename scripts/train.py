@@ -4,7 +4,7 @@ import os
 import sys
 from pathlib import Path
 
-from echocheck.config import Settings, SmokeSettings
+from echocheck.config import Settings, SmokeSettings, SubsampleSettings
 from echocheck.data.dataset import PoliticalDatasetJSONL
 from echocheck.metrics import compute_metrics
 from echocheck.models.model import load_political_classifier
@@ -20,9 +20,16 @@ def main():
     import torch
 
     smoke = "--smoke" in sys.argv
-    cfg = SmokeSettings() if smoke else Settings()
+    subsample = "--subsample" in sys.argv
 
-    print(f"ECHOCHECK — TRAINER + WANDB {'(SMOKE)' if smoke else ''}".strip())
+    if smoke:
+        cfg = SmokeSettings()
+    elif subsample:
+        cfg = SubsampleSettings()
+    else:
+        cfg = Settings()
+
+    print(f"ECHOCHECK — TRAINER + WANDB ({type(cfg).__name__})")
 
     # wandb env vars the Trainer picks up automatically.
     os.environ["WANDB_PROJECT"] = cfg.wandb_project

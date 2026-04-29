@@ -114,4 +114,16 @@ class SmokeSettings(Settings):
     run_name: str = "smoke-test"
 
 
+class SubsampleSettings(Settings):
+    processed_data_jsonl_dir: Path = Path("processed_data_subsample_jsonl")
+    model_output_dir: Path = Path("models/trainer_output_100k")
+
+    eval_model_dir: Path = Path("models/trainer_output_100k/final")
+    eval_test_data: Path = Path("processed_data_subsample_jsonl/test.jsonl")
+    eval_output_file: Path = Path("evaluation_results_100k.json")
+
+    run_name: str = "roberta-base-100k-baseline"
+    eval_run_name: str = "evaluation-100k-baseline"
+
+
 settings = Settings()
