@@ -1,0 +1,65 @@
+{
+  "test_metrics": {
+    "n_articles": 12498,
+    "n_windows_total": 53552,
+    "avg_windows_per_article": 4.284845575292047,
+    "n_articles_with_tied_vote": 910,
+    "accuracy": 0.8624579932789246,
+    "macro_f1": 0.8622332303295264
+  },
+  "aggregation": "majority_vote",
+  "classification_report": {
+    "center": {
+      "precision": 0.8178822495606327,
+      "recall": 0.8936629860777724,
+      "f1-score": 0.8540949759119064,
+      "support": 4166.0
+    },
+    "left": {
+      "precision": 0.8817255273761555,
+      "recall": 0.8929428708593375,
+      "f1-score": 0.8872987477638641,
+      "support": 4166.0
+    },
+    "right": {
+      "precision": 0.8950898846257043,
+      "recall": 0.8007681228996639,
+      "f1-score": 0.8453059673128088,
+      "support": 4166.0
+    },
+    "accuracy": 0.8624579932789246,
+    "macro avg": {
+      "precision": 0.8648992205208308,
+      "recall": 0.8624579932789246,
+      "f1-score": 0.8622332303295264,
+      "support": 12498.0
+    },
+    "weighted avg": {
+      "precision": 0.8648992205208309,
+      "recall": 0.8624579932789246,
+      "f1-score": 0.8622332303295265,
+      "support": 12498.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      3723,
+      198,
+      245
+    ],
+    [
+      300,
+      3720,
+      146
+    ],
+    [
+      529,
+      301,
+      3336
+    ]
+  ],
+  "timestamp": "2026-04-29T14:40:12.850462",
+  "model_dir": "models/trainer_output_windowed_100k/final",
+  "window_size": 256,
+  "stride": 64
+}
