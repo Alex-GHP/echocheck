@@ -8,9 +8,6 @@ from pathlib import Path
 
 import numpy as np
 import torch
-from echocheck.config import Settings, SubsampleSettings
-from echocheck.data.dataset import PoliticalDatasetJSONL
-from echocheck.metrics import compute_metrics
 from sklearn.metrics import classification_report, confusion_matrix
 from transformers import (
     AutoTokenizer,
@@ -18,6 +15,10 @@ from transformers import (
     Trainer,
     TrainingArguments,
 )
+
+from echocheck.config import Settings, SubsampleSettings
+from echocheck.data.dataset import PoliticalDatasetJSONL
+from echocheck.metrics import compute_metrics
 
 
 def main():

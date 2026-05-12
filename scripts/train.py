@@ -4,17 +4,18 @@ import os
 import sys
 from pathlib import Path
 
-from echocheck.config import Settings, SmokeSettings, SubsampleSettings, WindowedSettings
-from echocheck.data.dataset import PoliticalDatasetJSONL
-from echocheck.data.windowed_dataset import WindowedPoliticalDataset
-from echocheck.metrics import compute_metrics
-from echocheck.models.model import load_political_classifier
 from transformers import (
     DataCollatorWithPadding,
     EarlyStoppingCallback,
     Trainer,
     TrainingArguments,
 )
+
+from echocheck.config import Settings, SmokeSettings, SubsampleSettings, WindowedSettings
+from echocheck.data.dataset import PoliticalDatasetJSONL
+from echocheck.data.windowed_dataset import WindowedPoliticalDataset
+from echocheck.metrics import compute_metrics
+from echocheck.models.model import load_political_classifier
 
 
 def main():
