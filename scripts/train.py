@@ -4,10 +4,6 @@ import os
 import sys
 from pathlib import Path
 
-from echocheck.config import Settings, SmokeSettings, SubsampleSettings
-from echocheck.data.dataset import PoliticalDatasetJSONL
-from echocheck.metrics import compute_metrics
-from echocheck.models.model import load_political_classifier
 from transformers import (
     DataCollatorWithPadding,
     EarlyStoppingCallback,
@@ -15,15 +11,24 @@ from transformers import (
     TrainingArguments,
 )
 
+from echocheck.config import Settings, SmokeSettings, SubsampleSettings, WindowedSettings
+from echocheck.data.dataset import PoliticalDatasetJSONL
+from echocheck.data.windowed_dataset import WindowedPoliticalDataset
+from echocheck.metrics import compute_metrics
+from echocheck.models.model import load_political_classifier
+
 
 def main():
     import torch
 
     smoke = "--smoke" in sys.argv
     subsample = "--subsample" in sys.argv
+    windowed = "--windowed" in sys.argv
 
     if smoke:
         cfg = SmokeSettings()
+    elif windowed:
+        cfg = WindowedSettings()
     elif subsample:
         cfg = SubsampleSettings()
     else:
@@ -53,16 +58,31 @@ def main():
 
     print("\nLoading datasets...")
     data_dir = Path(cfg.processed_data_jsonl_dir)
-    train_dataset = PoliticalDatasetJSONL(
-        str(data_dir / "train.jsonl"),
-        tokenizer=tokenizer,
-        max_length=cfg.max_length,
-    )
-    val_dataset = PoliticalDatasetJSONL(
-        str(data_dir / "val.jsonl"),
-        tokenizer=tokenizer,
-        max_length=cfg.max_length,
-    )
+
+    if windowed:
+        train_dataset = WindowedPoliticalDataset(
+            str(data_dir / "train.jsonl"),
+            tokenizer=tokenizer,
+            window_size=cfg.window_size,
+            stride=cfg.stride,
+        )
+        val_dataset = WindowedPoliticalDataset(
+            str(data_dir / "val.jsonl"),
+            tokenizer=tokenizer,
+            window_size=cfg.window_size,
+            stride=cfg.stride,
+        )
+    else:
+        train_dataset = PoliticalDatasetJSONL(
+            str(data_dir / "train.jsonl"),
+            tokenizer=tokenizer,
+            max_length=cfg.max_length,
+        )
+        val_dataset = PoliticalDatasetJSONL(
+            str(data_dir / "val.jsonl"),
+            tokenizer=tokenizer,
+            max_length=cfg.max_length,
+        )
 
     training_args = TrainingArguments(
         output_dir=str(cfg.model_output_dir),

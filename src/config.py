@@ -126,4 +126,20 @@ class SubsampleSettings(Settings):
     eval_run_name: str = "evaluation-100k-baseline"
 
 
+class WindowedSettings(SubsampleSettings):
+    max_length: int = 256
+    per_device_train_batch_size: int = 48
+    per_device_eval_batch_size: int = 96
+
+    model_output_dir: Path = Path("models/trainer_output_windowed_100k")
+    eval_model_dir: Path = Path("models/trainer_output_windowed_100k/final")
+    eval_output_file: Path = Path("evaluation_results_windowed.json")
+
+    run_name: str = "roberta-windowed-256ovl64-100k"
+    eval_run_name: str = "evaluation-windowed-100k"
+
+    window_size: int = 256
+    stride: int = 64
+
+
 settings = Settings()

@@ -4,8 +4,9 @@ import argparse
 from pathlib import Path
 
 import torch
-from echocheck.config import settings
 from transformers import AutoTokenizer, RobertaForSequenceClassification
+
+from echocheck.config import settings
 
 
 class PoliticalClassifier:

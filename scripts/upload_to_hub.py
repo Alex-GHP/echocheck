@@ -3,8 +3,9 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from echocheck.config import settings
 from transformers import AutoTokenizer, RobertaForSequenceClassification
+
+from echocheck.config import settings
 
 
 def upload_model(

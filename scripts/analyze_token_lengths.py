@@ -17,9 +17,10 @@ from datetime import datetime
 from pathlib import Path
 
 import numpy as np
-from echocheck.config import PROJECT_ROOT, settings
 from tqdm import tqdm
 from transformers import AutoTokenizer
+
+from echocheck.config import PROJECT_ROOT, settings
 
 
 def count_lines(path: Path) -> int:
