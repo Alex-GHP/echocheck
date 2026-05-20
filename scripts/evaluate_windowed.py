@@ -11,6 +11,7 @@ from pathlib import Path
 
 import numpy as np
 import torch
+import wandb
 from sklearn.metrics import classification_report, confusion_matrix
 from transformers import (
     AutoTokenizer,
@@ -19,7 +20,6 @@ from transformers import (
     TrainingArguments,
 )
 
-import wandb
 from echocheck.config import Windowed512Settings, WindowedSettings
 from echocheck.data.windowed_dataset import WindowedPoliticalDataset
 
