@@ -142,4 +142,19 @@ class WindowedSettings(SubsampleSettings):
     stride: int = 64
 
 
+class Windowed512Settings(WindowedSettings):
+    max_length: int = 512
+    per_device_train_batch_size: int = 24
+    per_device_eval_batch_size: int = 48
+
+    window_size: int = 512
+
+    model_output_dir: Path = Path("models/trainer_output_windowed512_100k")
+    eval_model_dir: Path = Path("models/trainer_output_windowed512_100k/final")
+    eval_output_file: Path = Path("evaluation_results_windowed512.json")
+
+    run_name: str = "roberta-windowed-512ovl64-100k"
+    eval_run_name: str = "evaluation-windowed512-100k"
+
+
 settings = Settings()
