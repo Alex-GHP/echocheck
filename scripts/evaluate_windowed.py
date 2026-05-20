@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -19,13 +20,14 @@ from transformers import (
     TrainingArguments,
 )
 
-from echocheck.config import WindowedSettings
+from echocheck.config import Windowed512Settings, WindowedSettings
 from echocheck.data.windowed_dataset import WindowedPoliticalDataset
 
 
 def main():
-    cfg = WindowedSettings()
-    print("ECHOCHECK — WINDOWED TEST EVALUATION (majority vote per article)")
+    use_512 = "--windowed-512" in sys.argv
+    cfg = Windowed512Settings() if use_512 else WindowedSettings
+    print(f"ECHOCHECK — WINDOWED TEST EVALUATION (majority vote, {type(cfg).__name__})")
 
     os.environ["WANDB_PROJECT"] = cfg.wandb_project
     if cfg.wandb_entity:

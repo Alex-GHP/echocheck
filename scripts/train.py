@@ -11,7 +11,13 @@ from transformers import (
     TrainingArguments,
 )
 
-from echocheck.config import Settings, SmokeSettings, SubsampleSettings, WindowedSettings
+from echocheck.config import (
+    Settings,
+    SmokeSettings,
+    SubsampleSettings,
+    Windowed512Settings,
+    WindowedSettings,
+)
 from echocheck.data.dataset import PoliticalDatasetJSONL
 from echocheck.data.windowed_dataset import WindowedPoliticalDataset
 from echocheck.metrics import compute_metrics
@@ -23,10 +29,13 @@ def main():
 
     smoke = "--smoke" in sys.argv
     subsample = "--subsample" in sys.argv
-    windowed = "--windowed" in sys.argv
+    windowed_512 = "--windowed-512" in sys.argv
+    windowed = "--windowed" in sys.argv or windowed_512
 
     if smoke:
         cfg = SmokeSettings()
+    elif windowed_512:
+        cfg = Windowed512Settings()
     elif windowed:
         cfg = WindowedSettings()
     elif subsample:
